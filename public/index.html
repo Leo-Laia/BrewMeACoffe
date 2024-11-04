@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Fila do Café</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 70px;
+        }
+        #lista-pessoas {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        #fila {
+            list-style-type: none;
+            padding: 0;
+        }
+        #fila li {
+            padding: 10px;
+            background-color: #f8f9fa;
+            margin-bottom: 5px;
+            cursor: move;
+        }
+        #fila li.destacado {
+            background-color: #d4edda;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .btn-custom {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .form-inline .form-control {
+            width: auto;
+        }
+        .btn-resetar {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar fixa -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <a class="navbar-brand" href="#">Fila do Café</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSuporte" aria-controls="navbarSuporte" aria-expanded="false" aria-label="Alterna navegação">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSuporte">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="#" id="botao-regras">Regras</a>
+      </li>
+      <!-- Novo botão para exibir relatórios -->
+      <li class="nav-item">
+        <a class="nav-link" href="#" id="botao-relatorios">Relatórios</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Conteúdo principal -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- Fila do Café -->
+        <div class="col-md-3">
+            <!-- Formulário de cadastro em linha única -->
+            <form id="form-cadastro" class="form-inline mb-3">
+                <label for="nome" class="mr-2">Adicionar Pessoa:</label>
+                <input type="text" id="nome" class="form-control mr-2" required>
+                <button type="submit" class="btn btn-primary">Adicionar</button>
+            </form>
+
+            <!-- Lista de pessoas (fila) dentro de um card -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Fila do Café</h5>
+                </div>
+                <div class="card-body">
+                    <ul id="fila">
+                        <!-- Nomes serão adicionados aqui -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área central com cartões -->
+        <div class="col-md-6">
+            <!-- Cartão de quem é a vez -->
+            <div class="card text-center">
+                <div class="card-header">
+                    <h5>É a vez de:</h5>
+                </div>
+                <div class="card-body">
+                    <h1 id="proximo" class="display-4"></h1>
+                    <button id="botao-fez-cafe" class="btn btn-success btn-lg btn-custom">Marcar que Fez o Café</button>
+                    <button id="botao-outro-fez-cafe" class="btn btn-secondary btn-lg btn-custom">Outra Pessoa Fez o Café</button>
+                </div>
+            </div>
+
+            <!-- Cartão de último e próximo -->
+            <div class="card text-center">
+                <div class="card-header">
+                    <h5>Situação Atual</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Última pessoa que fez o café:</h5>
+                            <p id="ultimo" class="lead"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Próxima na fila:</h5>
+                            <p id="seguinte" class="lead"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Destaques -->
+        <div class="col-md-3">
+            <!-- Cartão de destaques -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Destaques da Semana</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Quem mais fez café:</strong> <span id="mais-fez"></span> (<span id="mais-fez-contador"></span> vezes)</p>
+                    <p><strong>Quem menos fez café:</strong> <span id="menos-fez"></span> (<span id="menos-fez-contador"></span> vezes)</p>
+                </div>
+            </div>
+
+            <!-- Lista de contadores com botão para resetar -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Total de Cafés Feitos
+                        <button id="botao-resetar" class="btn btn-danger btn-sm btn-resetar">Zerar Contagem</button>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul id="lista-contadores" class="list-group">
+                        <!-- Contadores serão adicionados aqui -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Regras -->
+<div class="modal fade" id="modal-regras" tabindex="-1" role="dialog" aria-labelledby="titulo-modal-regras" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="titulo-modal-regras" class="modal-title">Regras da Fila do Café</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>- Cada pessoa cadastrada entra no final da fila.</p>
+        <p>- A pessoa no topo da fila é a próxima a fazer o café.</p>
+        <p>- Se alguém fizer o café fora de sua vez, pode marcar e irá para o final da fila.</p>
+        <p>- É possível reorganizar a fila arrastando os nomes.</p>
+        <p>- Os destaques mostram quem mais e quem menos fez café na semana.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Relatórios -->
+<div class="modal fade" id="modal-relatorios" tabindex="-1" role="dialog" aria-labelledby="titulo-modal-relatorios" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="titulo-modal-relatorios" class="modal-title">Relatórios</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Conteúdo dos relatórios será inserido aqui -->
+        <div id="conteudo-relatorios">
+            <!-- Relatórios serão carregados dinamicamente -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <small class="text-muted">Apenas os dois últimos relatórios são mantidos. Relatórios mais antigos podem ser perdidos.</small>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS e dependências -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+<!-- Script principal -->
+<script>
+    // Variáveis globais removidas
+    // let fila = [];
+    // let historico = [];
+    // let contadores = {};
+
+    const apiUrl = '/api';
+
+    // Função para obter os dados do servidor
+    function obterDados() {
+        fetch(`${apiUrl}/dados`)
+            .then(response => response.json())
+            .then(data => {
+                atualizarInterface(data);
+            })
+            .catch(error => console.error('Erro ao obter dados:', error));
+    }
+
+    // Função para atualizar a interface
+    function atualizarInterface(dados) {
+        const fila = dados.fila;
+        const historico = dados.historico;
+        const contadores = dados.contadores;
+
+        // Atualiza a fila
+        const listaFila = document.getElementById('fila');
+        listaFila.innerHTML = '';
+        fila.forEach((pessoa, index) => {
+            const li = document.createElement('li');
+            li.textContent = pessoa;
+            li.setAttribute('draggable', true);
+            li.addEventListener('dragstart', dragStart);
+            li.addEventListener('dragover', dragOver);
+            li.addEventListener('drop', drop);
+            li.addEventListener('dragend', dragEnd);
+            listaFila.appendChild(li);
+        });
+
+        // Atualiza próximo, último e seguinte
+        document.getElementById('proximo').textContent = fila[0] || 'Ninguém';
+        document.getElementById('ultimo').textContent = historico[historico.length - 1] || 'Ninguém';
+        document.getElementById('seguinte').textContent = fila[1] || 'Ninguém';
+
+        // Atualiza destaques
+        atualizarDestaques(contadores);
+
+        // Atualiza lista de contadores
+        atualizarContadores(contadores);
+    }
+
+    // Função para atualizar os destaques
+    function atualizarDestaques(contadores) {
+        let max = -1;
+        let min = Infinity;
+        let quemMais = '';
+        let quemMenos = '';
+        let maxContador = 0;
+        let minContador = 0;
+
+        for (let pessoa in contadores) {
+            if (contadores[pessoa] > max) {
+                max = contadores[pessoa];
+                quemMais = pessoa;
+                maxContador = contadores[pessoa];
+            }
+            if (contadores[pessoa] < min) {
+                min = contadores[pessoa];
+                quemMenos = pessoa;
+                minContador = contadores[pessoa];
+            }
+        }
+        document.getElementById('mais-fez').textContent = quemMais || 'Ninguém';
+        document.getElementById('menos-fez').textContent = quemMenos || 'Ninguém';
+        document.getElementById('mais-fez-contador').textContent = maxContador;
+        document.getElementById('menos-fez-contador').textContent = minContador;
+    }
+
+    // Função para atualizar a lista de contadores
+    function atualizarContadores(contadores) {
+        const listaContadores = document.getElementById('lista-contadores');
+        listaContadores.innerHTML = '';
+        for (let pessoa in contadores) {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.textContent = pessoa;
+            const span = document.createElement('span');
+            span.className = 'badge badge-primary badge-pill';
+            span.textContent = contadores[pessoa];
+            li.appendChild(span);
+            listaContadores.appendChild(li);
+        }
+    }
+
+    // Eventos de drag and drop
+    let elementoArrastado;
+
+    function dragStart(e) {
+        elementoArrastado = e.target;
+        e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function dragOver(e) {
+        e.preventDefault();
+    }
+
+    function drop(e) {
+        e.preventDefault();
+        if (e.target.tagName === 'LI' && e.target !== elementoArrastado) {
+            const lista = elementoArrastado.parentNode;
+            const filhos = Array.from(lista.children);
+            const origemIndex = filhos.indexOf(elementoArrastado);
+            const destinoIndex = filhos.indexOf(e.target);
+
+            // Enviar nova ordem para o servidor
+            const itens = filhos.map(li => li.textContent);
+            const itemMovido = itens.splice(origemIndex, 1)[0];
+            itens.splice(destinoIndex, 0, itemMovido);
+
+            fetch(`${apiUrl}/reordenar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fila: itens })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.sucesso) {
+                    obterDados();
+                }
+            })
+            .catch(error => console.error('Erro ao reordenar fila:', error));
+        }
+    }
+
+    function dragEnd(e) {
+        elementoArrastado = null;
+    }
+
+    // Manipulação do formulário de cadastro
+    document.getElementById('form-cadastro').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const nome = document.getElementById('nome').value.trim();
+        if (nome) {
+            fetch(`${apiUrl}/adicionar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.sucesso) {
+                    document.getElementById('nome').value = '';
+                    obterDados();
+                } else {
+                    alert(data.mensagem);
+                }
+            })
+            .catch(error => console.error('Erro ao adicionar pessoa:', error));
+        }
+    });
+
+    // Botão de marcar que fez o café
+    document.getElementById('botao-fez-cafe').addEventListener('click', function() {
+        fetch(`${apiUrl}/fez-cafe`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.sucesso) {
+                obterDados();
+            } else {
+                alert(data.mensagem);
+            }
+        })
+        .catch(error => console.error('Erro ao marcar que fez o café:', error));
+    });
+
+    // Botão para marcar que outra pessoa fez o café
+    document.getElementById('botao-outro-fez-cafe').addEventListener('click', function() {
+        const nome = prompt('Quem fez o café?');
+        if (nome) {
+            fetch(`${apiUrl}/outro-fez-cafe`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.sucesso) {
+                    obterDados();
+                } else {
+                    alert(data.mensagem);
+                }
+            })
+            .catch(error => console.error('Erro ao marcar que outra pessoa fez o café:', error));
+        }
+    });
+
+    // Botão para abrir as regras
+    document.getElementById('botao-regras').addEventListener('click', function() {
+        $('#modal-regras').modal('show');
+    });
+
+    // **Novo** - Botão para abrir os relatórios
+    document.getElementById('botao-relatorios').addEventListener('click', function() {
+        // Obter os relatórios do servidor e exibir no modal
+        fetch(`${apiUrl}/relatorios`)
+            .then(response => response.json())
+            .then(data => {
+                exibirRelatorios(data.relatorios);
+                $('#modal-relatorios').modal('show');
+            })
+            .catch(error => console.error('Erro ao obter relatórios:', error));
+    });
+
+    // **Novo** - Função para exibir os relatórios no modal
+    function exibirRelatorios(relatorios) {
+        const conteudoRelatorios = document.getElementById('conteudo-relatorios');
+        conteudoRelatorios.innerHTML = '';
+
+        if (relatorios.length === 0) {
+            conteudoRelatorios.innerHTML = '<p>Nenhum relatório disponível.</p>';
+            return;
+        }
+
+        relatorios.forEach((relatorio, index) => {
+            const card = document.createElement('div');
+            card.className = 'card mb-3';
+
+            const cardHeader = document.createElement('div');
+            cardHeader.className = 'card-header';
+            cardHeader.textContent = `Relatório ${index + 1} - ${relatorio.data}`;
+
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+
+            const maisFez = document.createElement('p');
+            maisFez.innerHTML = `<strong>Quem mais fez café:</strong> ${relatorio.quemMais} (${relatorio.maxContador} vezes)`;
+
+            const menosFez = document.createElement('p');
+            menosFez.innerHTML = `<strong>Quem menos fez café:</strong> ${relatorio.quemMenos} (${relatorio.minContador} vezes)`;
+
+            const totalFeitos = document.createElement('p');
+            totalFeitos.innerHTML = '<strong>Total de Cafés Feitos:</strong>';
+
+            const lista = document.createElement('ul');
+            lista.className = 'list-group';
+
+            for (let pessoa in relatorio.contadores) {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.textContent = pessoa;
+                const span = document.createElement('span');
+                span.className = 'badge badge-primary badge-pill';
+                span.textContent = relatorio.contadores[pessoa];
+                li.appendChild(span);
+                lista.appendChild(li);
+            }
+
+            cardBody.appendChild(maisFez);
+            cardBody.appendChild(menosFez);
+            cardBody.appendChild(totalFeitos);
+            cardBody.appendChild(lista);
+
+            card.appendChild(cardHeader);
+            card.appendChild(cardBody);
+
+            conteudoRelatorios.appendChild(card);
+        });
+    }
+
+    // **Novo** - Botão para resetar contadores e gerar relatório
+    document.getElementById('botao-resetar').addEventListener('click', function() {
+        if (confirm('Tem certeza que deseja zerar a contagem? Os dados dos relatórios mais antigos podem ser perdidos.')) {
+            fetch(`${apiUrl}/gerar-relatorio`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.sucesso) {
+                    obterDados();
+                    alert('Relatório gerado e contadores resetados com sucesso.');
+                } else {
+                    alert(data.mensagem);
+                }
+            })
+            .catch(error => console.error('Erro ao gerar relatório:', error));
+        }
+    });
+
+    // Inicializa a interface
+    obterDados();
+    // Atualiza os dados a cada 2 segundos para manter a sincronização
+    setInterval(obterDados, 2000);
+</script>
+
+</body>
+</html>
