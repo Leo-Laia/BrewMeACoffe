@@ -1,0 +1,33 @@
+body {
+    padding-top: 70px;
+}
+#lista-pessoas {
+    max-height: 400px;
+    overflow-y: auto;
+}
+#fila {
+    list-style-type: none;
+    padding: 0;
+}
+#fila li {
+    padding: 10px;
+    background-color: #f8f9fa;
+    margin-bottom: 5px;
+    cursor: move;
+}
+#fila li.destacado {
+    background-color: #d4edda;
+}
+.card {
+    margin-bottom: 20px;
+}
+.btn-custom {
+    width: 100%;
+    margin-top: 10px;
+}
+.form-inline .form-control {
+    width: auto;
+}
+.btn-resetar {
+    float: right;
+}
