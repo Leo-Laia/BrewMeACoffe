@@ -33,12 +33,9 @@
     <div class="row">
         <!-- Fila do Café -->
         <div class="col-md-3">
-            <!-- Formulário de cadastro em linha única -->
-            <form id="form-cadastro" class="form-inline mb-3">
-                <label for="nome" class="mr-2">Adicionar Pessoa:</label>
-                <input type="text" id="nome" class="form-control mr-2" required>
-                <button type="submit" class="btn btn-primary">Adicionar</button>
-            </form>
+          <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#modal-cadastro">
+            Adicionar Pessoa
+          </button>
 
             <!-- Lista de pessoas (fila) dentro de um card -->
             <div class="card">
@@ -161,6 +158,38 @@
     </div>
   </div>
 </div>
+
+<!-- Modal de Cadastro -->
+<div class="modal fade" id="modal-cadastro" tabindex="-1" role="dialog" aria-labelledby="titulo-modal-cadastro" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="form-cadastro">
+        <div class="modal-header">
+          <h5 id="titulo-modal-cadastro" class="modal-title">Cadastrar Pessoa</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Campos de cadastro -->
+          <div class="form-group">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="telefone">Telefone:</label>
+            <input type="text" id="telefone" class="form-control">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Cadastrar</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>

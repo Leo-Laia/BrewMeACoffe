@@ -17,9 +17,9 @@ function atualizarInterface(dados) {
 
     const listaFila = document.getElementById('fila');
     listaFila.innerHTML = '';
-    fila.forEach((pessoa, index) => {
+    fila.forEach((nome, index) => {
         const li = document.createElement('li');
-        li.textContent = pessoa;
+        li.textContent = nome;
         li.setAttribute('draggable', true);
         li.addEventListener('dragstart', dragStart);
         li.addEventListener('dragover', dragOver);
@@ -119,25 +119,31 @@ function dragEnd(e) {
     elementoArrastado = null;
 }
 
+
 document.getElementById('form-cadastro').addEventListener('submit', function(e) {
     e.preventDefault();
     const nome = document.getElementById('nome').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
     if (nome) {
         fetch(`${apiUrl}/adicionar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome })
+            body: JSON.stringify({ nome, telefone })
         })
         .then(response => response.json())
         .then(data => {
             if (data.sucesso) {
                 document.getElementById('nome').value = '';
+                document.getElementById('telefone').value = '';
+                $('#modal-cadastro').modal('hide');
                 obterDados();
             } else {
                 alert(data.mensagem);
             }
         })
         .catch(error => console.error('Erro ao adicionar pessoa:', error));
+    } else {
+        alert('O nome é obrigatório.');
     }
 });
 
