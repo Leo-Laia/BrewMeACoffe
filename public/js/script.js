@@ -270,6 +270,29 @@ document.getElementById('botao-resetar').addEventListener('click', function() {
     }
 });
 
+document.getElementById('form-register').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const nome = document.getElementById('register-nome').value.trim();
+    const email = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value.trim();
+    const telefone = document.getElementById('register-telefone').value.trim();
+  
+    fetch('/usuario/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, password, telefone }),
+    })
+      .then((response) => response.json().then(data => ({ status: response.status, body: data })))
+      .then(({ status, body }) => {
+        alert(body.message);
+        if (status === 201) {
+          document.getElementById('form-register').reset();
+          $('#modal-register').modal('hide');
+        }
+      })
+      .catch((error) => console.error('Erro ao registrar:', error));
+  });
+
 obterDados();
 
 setInterval(obterDados, 2000);

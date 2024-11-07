@@ -12,7 +12,9 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const usuarioRoutes = require('./routes/usuario');
 const apiRoutes = require('./routes/api');
+app.use('/usuario', usuarioRoutes);
 app.use('/api', apiRoutes);
 
 sequelize.authenticate()
