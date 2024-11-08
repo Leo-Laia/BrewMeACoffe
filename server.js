@@ -1,8 +1,9 @@
-const path = require('path');
 const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
 const bodyParser = require('body-parser');
+const path = require('path');
 const cors = require('cors');
-
 const { sequelize } = require('./models');
 
 const app = express();
@@ -12,7 +13,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const session = require('express-session');
+
 app.use(
   session({
     secret: 'secret_for_development',
@@ -21,7 +22,7 @@ app.use(
   })
 );
 
-const passport = require('passport');
+
 app.use(passport.initialize());
 app.use(passport.session());
 require('./config/passport')(passport);

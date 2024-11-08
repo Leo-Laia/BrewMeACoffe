@@ -28,11 +28,15 @@
   </div>
 
     <!-- Botão para abrir o modal de login -->
-  <button type="button" class="btn btn-secondary ml-2" data-toggle="modal" data-target="#modal-login">
+  <button id="botao-login" type="button" class="btn btn-secondary ml-2" data-toggle="modal" data-target="#modal-login">
     Login
   </button>
+  <!-- Botão de Logout -->
+  <button id="botao-logout" type="button" class="btn btn-danger ml-2" data-toggle="modal">
+    Logout
+  </button>
   <!-- Botão para abrir o modal de registro -->
-  <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#modal-register">
+  <button id="botao-register" type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#modal-register">
     Registrar
   </button>
 </nav>
@@ -138,7 +142,7 @@
                 </div>
                 <div class="card-body">
                     <h1 id="proximo" class="display-4"></h1>
-                    <button id="botao-fez-cafe" class="btn btn-success btn-lg btn-custom">Marcar como Fez o Café</button>
+                    <button id="botao-fez-cafe" class="btn btn-success btn-lg btn-custom">Marcar que Fez o Café</button>
                     <button id="botao-outro-fez-cafe" class="btn btn-secondary btn-lg btn-custom">Outra Pessoa Fez o Café</button>
                 </div>
             </div>

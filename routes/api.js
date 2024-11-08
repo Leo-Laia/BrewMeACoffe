@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { ensureAuthenticated } = require('../middleware/auth');
 const { Pessoa, Fila, Historico, Contador, Relatorio } = require('../models');
 
-
+ensureAuthenticated, 
 router.get('/dados', async (req, res) => {
     try {
       
@@ -39,7 +40,7 @@ router.get('/dados', async (req, res) => {
     }
   });
   
-
+//ensureAuthenticated, 
 router.post('/adicionar', async (req, res) => {
   const { nome, telefone } = req.body;
   if (!nome) {
@@ -65,9 +66,10 @@ router.post('/adicionar', async (req, res) => {
   }
 });
 
-
-router.post('/fez-cafe', async (req, res) => {
+//ensureAuthenticated, 
+router.post('/fez-cafe', ensureAuthenticated, async (req, res) => {
     try {
+      console.log("Fez o café");
       const primeiro = await Fila.findOne({
         include: [{ model: Pessoa, as: 'pessoa' }],
         order: [['posicao', 'ASC']],
@@ -97,7 +99,7 @@ router.post('/fez-cafe', async (req, res) => {
     }
   });
   
-
+//ensureAuthenticated, 
 router.post('/outro-fez-cafe', async (req, res) => {
     const { nome } = req.body;
     if (!nome) {
@@ -129,7 +131,8 @@ router.post('/outro-fez-cafe', async (req, res) => {
       res.status(500).json({ sucesso: false, mensagem: 'Erro ao atualizar fila.' });
     }
   });
-  
+
+//ensureAuthenticated, 
 router.post('/reordenar', async (req, res) => {
     const { fila: novaFila } = req.body;
     if (!Array.isArray(novaFila)) {
@@ -150,6 +153,7 @@ router.post('/reordenar', async (req, res) => {
     }
   });
   
+//ensureAuthenticated, 
 router.post('/gerar-relatorio', async (req, res) => {
     try {
       const contadores = await Contador.findAll({
@@ -218,6 +222,7 @@ router.post('/gerar-relatorio', async (req, res) => {
     }
   });
   
+//ensureAuthenticated,   
 router.get('/relatorios', async (req, res) => {
     try {
       const relatorios = await Relatorio.findAll({

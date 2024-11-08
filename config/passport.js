@@ -12,13 +12,7 @@ module.exports = function (passport) {
           if (!usuario) {
             return done(null, false, { message: 'Email não cadastrado.' });
           }
-
-          console.log('Senha fornecida no login:', password);
-          console.log('Senha armazenada no banco:', usuario.password);
-
           const isMatch = await bcrypt.compare(password, usuario.password);
-
-          console.log('Resultado da comparação de senha:', isMatch);
 
           if (!isMatch) {
             return done(null, false, { message: 'Senha incorreta.' });
