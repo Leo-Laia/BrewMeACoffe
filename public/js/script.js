@@ -34,6 +34,7 @@ function atualizarInterface(dados) {
 
     atualizarDestaques(contadores);
     atualizarContadores(contadores);
+    verificarAutenticacao();
 }
 
 function atualizarDestaques(contadores) {
@@ -149,9 +150,15 @@ document.getElementById('form-cadastro').addEventListener('submit', function(e) 
 
 document.getElementById('botao-fez-cafe').addEventListener('click', function() {
     fetch(`${apiUrl}/fez-cafe`, {
-        method: 'POST'
+        method: 'POST',
+        credentials: 'include',
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw err; });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.sucesso) {
             obterDados();
@@ -159,7 +166,10 @@ document.getElementById('botao-fez-cafe').addEventListener('click', function() {
             alert(data.mensagem);
         }
     })
-    .catch(error => console.error('Erro ao marcar que fez o café:', error));
+    .catch(error => {
+        console.error('Erro ao marcar que fez o café:', error);
+        alert(error.message || 'Erro desconhecido.');
+    });
 });
 
 document.getElementById('botao-outro-fez-cafe').addEventListener('click', function() {
@@ -270,6 +280,93 @@ document.getElementById('botao-resetar').addEventListener('click', function() {
     }
 });
 
-obterDados();
+document.getElementById('form-register').addEventListener('submit', function (e) {
+
+    e.preventDefault();
+    const nome = document.getElementById('register-nome').value.trim();
+    const email = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value.trim();
+    const telefone = document.getElementById('register-telefone').value.trim();
+  
+    fetch('/usuario/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, password, telefone }),
+    })
+      .then((response) => response.json().then(data => ({ status: response.status, body: data })))
+      .then(({ status, body }) => {
+        alert(body.message);
+        if (status === 201) {
+          document.getElementById('form-register').reset();
+          $('#modal-register').modal('hide');
+        }
+      })
+      .catch((error) => console.error('Erro ao registrar:', error));
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('form-login').addEventListener('submit', function (e) {
+        
+      e.preventDefault();
+  
+      const emailElement = document.getElementById('login-email');
+      const passwordElement = document.getElementById('login-password');
+  
+      if (!emailElement || !passwordElement) {
+        console.error('Elemento de input não encontrado.');
+        return;
+      }
+  
+      const email = emailElement.value.trim();
+      const password = passwordElement.value.trim();
+
+      fetch('/usuario/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+        .then((response) =>
+          response.json().then((data) => ({ status: response.status, body: data }))
+        )
+        .then(({ status, body }) => {
+          alert(body.message);
+          if (status === 200) {
+            document.getElementById('form-login').reset();
+            $('#modal-login').modal('hide');
+          }
+        })
+        .then(verificarAutenticacao())
+        .catch((error) => console.error('Erro ao fazer login:', error));
+    });
+  });
+
+  document.getElementById('botao-logout').addEventListener('click', function () {
+    fetch('/usuario/logout')
+      .then((response) => response.json())
+      .then((data) => {
+        alert(data.message);
+      })
+      .then(verificarAutenticacao())
+      .catch((error) => console.error('Erro ao fazer logout:', error));
+  });
+
+  function verificarAutenticacao() {
+    fetch('/usuario/status')
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.autenticado) {
+          document.getElementById('botao-login').style.display = 'none';
+          document.getElementById('botao-register').style.display = 'none';
+          document.getElementById('botao-logout').style.display = 'block';
+        } else {
+          document.getElementById('botao-login').style.display = 'block';
+          document.getElementById('botao-register').style.display = 'block';
+          document.getElementById('botao-logout').style.display = 'none';
+        }
+      })
+      .catch((error) => console.error('Erro ao verificar autenticação:', error));
+  }
+
+  obterDados();
 
 setInterval(obterDados, 2000);
