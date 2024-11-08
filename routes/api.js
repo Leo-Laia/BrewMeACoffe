@@ -3,7 +3,7 @@ const router = express.Router();
 const { ensureAuthenticated } = require('../middleware/auth');
 const { Pessoa, Fila, Historico, Contador, Relatorio } = require('../models');
 
-ensureAuthenticated, 
+//ensureAuthenticated, 
 router.get('/dados', async (req, res) => {
     try {
       
@@ -67,7 +67,7 @@ router.post('/adicionar', async (req, res) => {
 });
 
 //ensureAuthenticated, 
-router.post('/fez-cafe', ensureAuthenticated, async (req, res) => {
+router.post('/fez-cafe', async (req, res) => {
     try {
       console.log("Fez o café");
       const primeiro = await Fila.findOne({
