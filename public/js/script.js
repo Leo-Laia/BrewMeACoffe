@@ -271,6 +271,7 @@ document.getElementById('botao-resetar').addEventListener('click', function() {
 });
 
 document.getElementById('form-register').addEventListener('submit', function (e) {
+
     e.preventDefault();
     const nome = document.getElementById('register-nome').value.trim();
     const email = document.getElementById('register-email').value.trim();
@@ -293,6 +294,41 @@ document.getElementById('form-register').addEventListener('submit', function (e)
       .catch((error) => console.error('Erro ao registrar:', error));
   });
 
-obterDados();
+  document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('form-login').addEventListener('submit', function (e) {
+        
+      e.preventDefault();
+  
+      const emailElement = document.getElementById('login-email');
+      const passwordElement = document.getElementById('login-password');
+  
+      if (!emailElement || !passwordElement) {
+        console.error('Elemento de input não encontrado.');
+        return;
+      }
+  
+      const email = emailElement.value.trim();
+      const password = passwordElement.value.trim();
+
+      fetch('/usuario/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+        .then((response) =>
+          response.json().then((data) => ({ status: response.status, body: data }))
+        )
+        .then(({ status, body }) => {
+          alert(body.message);
+          if (status === 200) {
+            document.getElementById('form-login').reset();
+            $('#modal-login').modal('hide');
+          }
+        })
+        .catch((error) => console.error('Erro ao fazer login:', error));
+    });
+  });
+
+  obterDados();
 
 setInterval(obterDados, 2000);

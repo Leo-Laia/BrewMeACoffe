@@ -1,8 +1,6 @@
-// models/usuario.js
-
 'use strict';
 const { Model } = require('sequelize');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 module.exports = (sequelize, DataTypes) => {
   class Usuario extends Model {
@@ -36,13 +34,14 @@ module.exports = (sequelize, DataTypes) => {
       tableName: 'Usuarios',
       hooks: {
         beforeCreate: async (usuario) => {
+          console.log("Hook - Criando usuario");
           if (usuario.password) {
             const salt = await bcrypt.genSalt(10);
             usuario.password = await bcrypt.hash(usuario.password, salt);
           }
         },
         beforeUpdate: async (usuario) => {
-          if (usuario.password) {
+          if (usuario.changed('password')) {
             const salt = await bcrypt.genSalt(10);
             usuario.password = await bcrypt.hash(usuario.password, salt);
           }

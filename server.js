@@ -12,10 +12,25 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const session = require('express-session');
+app.use(
+  session({
+    secret: 'secret_for_development',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+const passport = require('passport');
+app.use(passport.initialize());
+app.use(passport.session());
+require('./config/passport')(passport);
+
 const usuarioRoutes = require('./routes/usuario');
 const apiRoutes = require('./routes/api');
 app.use('/usuario', usuarioRoutes);
 app.use('/api', apiRoutes);
+
 
 sequelize.authenticate()
   .then(() => {

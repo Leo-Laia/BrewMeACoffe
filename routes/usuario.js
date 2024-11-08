@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { Usuario } = require('../models');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+const passport = require('passport');
 
 router.post('/register', async (req, res) => {
+
   const { nome, email, password, telefone } = req.body;
   try {
     const usuarioExistente = await Usuario.findOne({ where: { email } });
@@ -11,13 +13,10 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Email já cadastrado.' });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     const novoUsuario = await Usuario.create({
       nome,
       email,
-      password: hashedPassword,
+      password,
       telefone,
     });
 
@@ -27,5 +26,24 @@ router.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Erro ao registrar usuário.' });
   }
 });
+
+router.post('/login', (req, res, next) => {
+
+  console.log("Login");
+    passport.authenticate('local', (err, usuario, info) => {
+      if (err) {
+        return next(err);
+      }
+      if (!usuario) {
+        return res.status(400).json({ message: info.message });
+      }
+      req.logIn(usuario, (err) => {
+        if (err) {
+          return next(err);
+        }
+        return res.json({ message: 'Login realizado com sucesso.' });
+      });
+    })(req, res, next);
+  });
 
 module.exports = router;
